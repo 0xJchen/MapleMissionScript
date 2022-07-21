@@ -1,7 +1,14 @@
 # -*- encoding=utf8 -*-
-__author__ = "Kyuu"
 
 from airtest.core.api import *
+from airtest.cli.parser import cli_setup
+
+if not cli_setup():
+    #pass authentication here
+
+
+# script content
+log("start...")
 
 auto_setup(__file__)
 
@@ -30,7 +37,7 @@ map_loading_temp = Template(r"tpl1658249095159.png", record_pos=(0.333, -0.212),
 while(True):
     #如果空置次数为0就重置灯泡点击事件
     if(light_lock == True and free_count == 0):
-        print("重置灯泡点击锁定")
+        log("重置灯泡点击锁定")
         light_lock = False
     
     #开局截图     
@@ -38,56 +45,82 @@ while(True):
     
     auto_task_pos = auto_task_temp.match_in(screen)
     if(auto_task_pos):
-        print("检测到正在执行自动任务 等待")
+        log("检测到正在执行自动任务 等待")
         sleep(2)
         free_count = 0
         continue
 
     auto_nav_pos = auto_nav_temp.match_in(screen)
     if(auto_nav_pos):
-        print("正在进行自动寻路")
+        log("正在进行自动寻路")
         sleep(2)
         free_count = 0
         continue
 
     map_loading_pos = map_loading_temp.match_in(screen)
     if(map_loading_pos):
-        print("过图加载中。。。")
+        log("过图加载中。。。")
         sleep(2)
         free_count = 0
         continue
 
 
-    if(free_count >= 5):
-        print("空置回数到达 %d 回 寻找新任务" %(free_count))
+    if(free_count >= 4):
+        log("空置回数到达 %d 回 寻找新任务" %(free_count))
         mission_pos = mission_temp.match_in(screen)
         if(mission_pos):
             #直接点击第一栏任务区域
-            touch([99,200])
-            print("主动点击任务")
+            touch([395, 318])
+            log("主动点击任务")
             free_count = 0
             continue
-            
-    next_pos = next_temp.match_in(screen)
-    if(next_pos):
-        touch(next_pos)
-        print("点击下一步")
-        sleep(2)
-        free_count = 0
+    
+    
+    cur_screen = G.DEVICE.snapshot()
+    multiple_next=False
+    while(True):
+        next_pos = next_temp.match_in(cur_screen)
+        if next_pos:
+            multiple_next=True
+            touch(next_pos)
+            log("点击下一步")
+            free_count = 0
+            time.sleep(1)
+            cur_screen=G.DEVICE.snapshot()
+        else:
+            break
+    if multiple_next:
         continue
+    else:
+        pass
+#     next_pos = next_temp.match_in(screen)
+#     if(next_pos):
+#         touch(next_pos)
+#         log("点击下一步")
+#         sleep(2)
+#         free_count = 0
+#         continue
     
     accept_pos = accept_temp.match_in(screen)
     if(accept_pos):
         touch(accept_pos)
-        print("点击接受")
+        log("点击接受")
         free_count = 0
+        sleep(2)
+        continue
+
+    award_pos = award_temp.match_in(screen)
+
+    if(award_pos):
+        touch(award_pos)
+        log("领取奖励")
         sleep(2)
         continue
         
     finish_pos = finish_temp.match_in(screen)
     if(finish_pos):
         touch(finish_pos)
-        print("点击完成")
+        log("点击完成")
         free_count = 0
         sleep(2)
         continue
@@ -95,32 +128,26 @@ while(True):
     ok_pos = ok_temp.match_in(screen)
     if(ok_pos):
         touch(ok_pos)
-        print("点击确认")
+        log("点击确认")
         free_count = 0
         sleep(2)
         continue
         
-    award_pos = award_temp.match_in(screen)
 
-    if(award_pos):
-        touch(award_pos)
-        print("领取奖励")
-        sleep(2)
-        continue
 
     
     auto_skill_pos = auto_skill_temp.match_in(screen)
     if(auto_skill_pos):
         touch(auto_skill_pos)
         free_count = 0
-        print("自动加点")
+        log("自动加点")
         sleep(2)
         continue
     
     auto_equip_pos = auto_equip_temp.match_in(screen)
     if(auto_equip_pos):
         touch(auto_equip_pos)
-        print("自动装备")
+        log("自动装备")
         free_count = 0
         sleep(2)
         continue
@@ -128,10 +155,10 @@ while(True):
     light_pos = light_temp.match_in(screen)
     if(light_pos):
         if(light_lock):
-            print("灯泡已经点过了 忽略这次点击")
+            log("灯泡已经点过了 忽略这次点击")
         else:
             touch(light_pos)
-            print("点击附近任务灯泡")
+            log("点击附近任务灯泡")
             light_lock = True
             free_count = 1
             sleep(2)
@@ -140,7 +167,7 @@ while(True):
     maple_book_pos = maple_book_temp.match_in(screen)
     if(maple_book_pos):
         touch(maple_book_pos)
-        print("点击附近任务枫叶书")
+        log("点击附近任务枫叶书")
         free_count = 0
         sleep(2)
         continue
@@ -149,25 +176,25 @@ while(True):
     finish_mission_pos = finish_mission_temp.match_in(screen)
     if(finish_mission_pos):
         touch(finish_mission_pos)
-        print("点击结束任务")
+        log("点击结束任务")
         sleep(2)
         continue
         
     if(start_mission_pos):
         touch(start_mission_pos)
-        print("多选任务开始")
+        log("多选任务开始")
         sleep(2)
         continue
     
     hot_and_new_pos = hot_and_new_temp.match_in(screen)
     if(hot_and_new_pos):
-        print("关闭广告 HOT & NEW")
+        log("关闭广告 HOT & NEW")
         touch([1143,70])
         sleep(2)
         continue
     
     free_count+=1
-    print("空置 %d 回" %(free_count))
+    log("空置 %d 回" %(free_count))
 
    
     
