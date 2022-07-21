@@ -1,11 +1,13 @@
 # -*- encoding=utf8 -*-
+__author__ = "Kyuu"
 
 from airtest.core.api import *
 from airtest.cli.parser import cli_setup
+from airtest.core.api import *
+# airtest.core.api中包含了一个名为ST的变量，即为全局设置
+ST.THRESHOLD = 0.85
 
-if not cli_setup():
-    #pass authentication here
-
+auto_setup(__file__)
 
 # script content
 log("start...")
@@ -32,7 +34,7 @@ hot_and_new_temp = Template(r"tpl1658248457448.png", record_pos=(-0.352, -0.227)
 map_loading_temp = Template(r"tpl1658249095159.png", record_pos=(0.333, -0.212), resolution=(1280, 720))
 
 
-
+multi_task_finish = Template(r"tpl1658387323206.png", record_pos=(-0.169, 0.228), resolution=(1280, 720))
 
 while(True):
     #如果空置次数为0就重置灯泡点击事件
@@ -65,7 +67,7 @@ while(True):
         continue
 
 
-    if(free_count >= 4):
+    if(free_count >= 2):
         log("空置回数到达 %d 回 寻找新任务" %(free_count))
         mission_pos = mission_temp.match_in(screen)
         if(mission_pos):
@@ -101,6 +103,31 @@ while(True):
 #         free_count = 0
 #         continue
     
+    award_pos = award_temp.match_in(screen)
+    log(award_pos)
+    if(award_pos):
+#         touch(award_pos)
+        touch([1240,950])
+        log("领取奖励")
+        sleep(2)
+        continue
+        
+    multi_finish_mission_pos = multi_task_finish.match_in(screen)
+    if(multi_finish_mission_pos):
+        touch(multi_finish_mission_pos)
+        log("点击结束多任务")
+        sleep(2)
+        continue
+    
+    finish_pos = finish_temp.match_in(screen)
+    if(finish_pos):
+#         touch(finish_pos)
+        touch([2128,614])
+        log("点击完成")
+        free_count = 0
+        sleep(2)
+        continue
+    
     accept_pos = accept_temp.match_in(screen)
     if(accept_pos):
         touch(accept_pos)
@@ -109,21 +136,8 @@ while(True):
         sleep(2)
         continue
 
-    award_pos = award_temp.match_in(screen)
 
-    if(award_pos):
-        touch(award_pos)
-        log("领取奖励")
-        sleep(2)
-        continue
-        
-    finish_pos = finish_temp.match_in(screen)
-    if(finish_pos):
-        touch(finish_pos)
-        log("点击完成")
-        free_count = 0
-        sleep(2)
-        continue
+
     
     ok_pos = ok_temp.match_in(screen)
     if(ok_pos):
@@ -173,6 +187,9 @@ while(True):
         continue
     
     start_mission_pos = start_mission_temp.match_in(screen)
+    
+
+    
     finish_mission_pos = finish_mission_temp.match_in(screen)
     if(finish_mission_pos):
         touch(finish_mission_pos)
@@ -204,5 +221,3 @@ while(True):
 
 
 
-
-        
